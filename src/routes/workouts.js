@@ -3,7 +3,7 @@ const { Workout } = require("../models");
 
 router
   // get all workouts
-  .get(async (_, res) => {
+  .get("/", async (_, res) => {
     let allWos;
     try {
       allWos = await Workout.model
@@ -14,10 +14,10 @@ router
       return res.status(500).end();
     }
 
-    res.json(allWos.map(d => d.get()));
+    res.json(allWos);
   })
   // Create workout
-  .post(async (req, res) => {
+  .post("/", async (req, res) => {
     let wo;
     try {
       wo = await Workout.model.create({ exercises: req.body.exercises || [] });
@@ -41,8 +41,10 @@ router
       return res.status(404).end();
     }
 
+    workout.exercises.push(req.body);
+
     try {
-      await workout.update(req.body);
+      await workout.save();
     } catch (error) {
       return res.status(500).end();
     }
